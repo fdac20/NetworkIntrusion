@@ -40,7 +40,7 @@ def main():
 
     # converts every row in the train data to a string, then adds it to a set
     # if the same string row already exists in the set, then it will not be added
-    f=open("../../data/UNSW_NB15_training-set_original.csv","r")
+    f=open("../../data/UNSW_NB15_training-set.csv","r")
     line_set={"0"}
     while True:
         line=f.readline()
