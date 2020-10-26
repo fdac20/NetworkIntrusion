@@ -32,14 +32,11 @@ def read_data(data):
     return X, y_binary,y_labels
 
 # only call this on training set
-def PCA_train_test(X, y):
-    # pca is NOT optional
+def PCA_train_test(X):
     X, pca = pca_data(X)
-    desc = '_PCA'
 
-    np.save("X_train%s.npy" % desc, X)
-    np.save("y_train%s.npy" % desc, y)
-    return X, y, pca
+    np.save("../../data/X_train_PCA.npy", X)
+    return X, pca
 
 def pca_data(X):
     pca = PCA()
@@ -47,6 +44,7 @@ def pca_data(X):
 
     #get variance explained
     explained_variance = pca.explained_variance_ratio_
+    
     '''
     #make first plot of just principal components
     fig1 = plt.figure()
@@ -54,15 +52,16 @@ def pca_data(X):
     plt.title("Principal Components")
     plt.ylabel("Percent of Variance Explained")
     plt.xlabel("Principal Component")
-    plt.savefig("graphs/principal_comp_.png")
+    plt.savefig("../../graphs/principal_comp_.png")
     '''
+
     #select what percent var to keep
     desired_var = 0.9
     #select how many eigenvalues to keep
     cumsum = np.cumsum(explained_variance)
     k = np.argwhere(cumsum > desired_var)[0]
 
-    '''
+    ''' 
     #make second plot of cum var explained
     fig2 = plt.figure()
     plt.plot(cumsum)
@@ -71,8 +70,9 @@ def pca_data(X):
     plt.legend()
     plt.ylabel("Cumulative Percent of Variance Explained")
     plt.xlabel("Principal Component")
-    plt.savefig("graphs/var_exp_.png")
+    plt.savefig("../../graphs/var_exp_.png")
     '''
+
     pca = PCA(n_components=int(k))
     X = pca.fit_transform(X)
 
@@ -82,20 +82,27 @@ def pca_data(X):
 def main():
 
     # training data
-    data = pd.read_csv('../../data/UNSW_NB15_training-set_original.csv')
+    data = pd.read_csv('../../data/UNSW_train.csv')
     X, y_bin, y_lab = read_data(data)
-    print(x[0:5])
-    print(y_bin[0:5])
-    print(y_lab[0:5])
-    #X, y, pca = PCA_train_test(X, y)
-    ''' 
+
+    np.save("../../data/X_train.npy",X)
+    np.save("../../data/y_train_bin.npy",y_bin)
+    np.save("../../data/y_train_labels.npy",y_lab)
+
+    X, pca = PCA_train_test(X)
+     
     # testing data
-    data = pd.read_csv("../../data/UNSW_NB15_testing-set.csv")
-    X, y = read_data(data)
+    data = pd.read_csv("../../data/UNSW_test.csv")
+    X, y_bin, y_lab = read_data(data)
+
+    np.save("../../data/X_test.npy",X)
+    np.save("../../data/y_test_bin.npy",y_bin)
+    np.save("../../data/y_test_labels.npy",y_lab)
+
     X_test_pca = pca.fit_transform(X)
-    np.save("X_test_PCA.npy", X_test_pca)
-    np.save("y_test_PCA.npy", y)
-    '''
+    np.save("../../data/X_test_PCA.npy", X_test_pca)
+
+    
 
 if __name__ == "__main__":
     main()

@@ -23,7 +23,7 @@ def count_plot(labels):
         else:
             label_dict[l] += 1
     label_dict = OrderedDict(sorted(label_dict.items(), key=itemgetter(1), reverse=True))
-    
+    ''' 
     fig = plt.figure(figsize=(100, 100))
     plt.bar(label_dict.keys(), label_dict.values())
     plt.xticks(rotation=90, fontsize=100)
@@ -33,8 +33,8 @@ def count_plot(labels):
     # plt.title("Distribution of Attacks Only")
     # plt.savefig("../graphs/attacks_only.png")
     plt.title("Distribution of Samples", fontsize=15)
-    plt.savefig("../graphs/label_distribution_train.png", bbox='tight_layout')
-    
+    plt.savefig("../../graphs/label_distribution_train.png", bbox='tight_layout')
+    '''
 
 def main():
 
