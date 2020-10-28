@@ -85,7 +85,7 @@ def main():
     data = pd.read_csv('../../data/UNSW_train.csv')
     X, y_bin, y_lab = read_data(data)
 
-    np.save("../../data/X_train.npy",X)
+    np.save("../../data/X_train_ORIG.npy",X)
     np.save("../../data/y_train_bin.npy",y_bin)
     np.save("../../data/y_train_labels.npy",y_lab)
 
@@ -95,7 +95,7 @@ def main():
     data = pd.read_csv("../../data/UNSW_test.csv")
     X, y_bin, y_lab = read_data(data)
 
-    np.save("../../data/X_test.npy",X)
+    np.save("../../data/X_test_ORIG.npy",X)
     np.save("../../data/y_test_bin.npy",y_bin)
     np.save("../../data/y_test_labels.npy",y_lab)
 

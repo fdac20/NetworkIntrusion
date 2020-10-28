@@ -1,2 +1,3 @@
-data/*
+data/*.csv
+data/*.npy
 .DS_STORE
