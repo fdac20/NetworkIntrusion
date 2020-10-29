@@ -22,12 +22,13 @@ from sklearn.preprocessing import StandardScaler
 
 
 #Nasty lil dictionary used to determine which node will run which parmiganna combination
-jobs = {1:'kNN', 2:'MLP', 3:'SGD_Classifier', 4:'Random_Forest', 5:'Naive-Bayes'}
-data_set = {1:"ORIG",2:"PCA"}
-prediction_set = {1:"bin",2:"labels"}
+clusterJobs = {1:('kNN',"ORIG","bin"), 2:('kNN',"PCA","bin"), 3:('kNN',"ORIG","labels"), 4:('kNN',"PCA","labels"),
+        5:('MLP',"ORIG","bin"), 6:('MLP',"PCA","bin"), 7:('MLP',"ORIG","labels"), 8:('MLP',"PCA","labels"),
+        9:('SGD_Classifier',"ORIG","bin"), 10:('SGD_Classifier',"PCA","bin"), 11:('SGD_Classifier',"ORIG","labels"), 12:('SGD_Classifier',"PCA","labels"),
+        13:('Random_Forest',"ORIG","bin"), 14:('Random_Forest',"PCA","bin"), 15:('Random_Forest',"ORIG","labels"), 16:('Random_Forest',"PCA","labels"),
+        17:('Naive-Bayes',"ORIG","bin"), 18:('Naive-Bayes',"PCA","bin"), 19:('Naive-Bayes',"ORIG","labels"), 20:('Naive-Bayes',"PCA","labels")}
 
-ps_num = 1
-ds_num = 1
+jobNo = 0
 
 #function to read in the CSV files
 def read_npy():
@@ -39,12 +40,24 @@ def read_npy():
     #split data into predictions and predictors: 4 sets (normal,labels),(normal,binary), (PCA,labels),(PCA,binary)
 
 
-    X = np.load("../data/X_train_%s.npy" % data_set[ds_num]) 
-    y = np.load("../data/y_train_%s.npy" % prediction_set[ps_num])
+    X = np.load("../data/X_train_%s.npy" % clusterJobs[jobNo][1]) 
+    y = np.load("../data/y_train_%s.npy" % clusterJobs[jobNo][2])
 
 
      
     return X, y
+
+def createSkeletonCSV():
+    row_names = []
+
+    for k,v in clusterJobs.items():
+        name = "Best %s %s %s" % (v[0], v[1],v[2])
+        row_names.append(name)
+
+    col_names = ["Best Params", "F1-Score", "Refit Time"]
+
+    df = pd.DataFrame(None, index=[row_names], columns=col_names)
+    df.to_csv("../saved_models/Random_Search_Info.csv")
 
 def get_params(algorithm):
     '''
@@ -127,18 +140,18 @@ def random_search_(algorithm, params, X, y, iters=20, jobs=5):
     
     #save the model
     best_estimator = random_search.best_estimator_
-    joblib.dump(best_estimator, "../saved_models/best_%s_%s_%s.joblib" % (algorithm,prediction_set[ps_num],data_set[ds_num]))
+    joblib.dump(best_estimator, "../saved_models/best_%s_%s_%s.joblib" % (clusterJobs[jobNo][0],clusterJobs[jobNo][1],clusterJobs[jobNo][2]))
 
     #write info about the model
-    info = pd.read_csv("../saved_models/Random_Search_Info_%s_%s.csv" % (prediction_set[ps_num],data_set[ds_num]), index_col=0)
+    info = pd.read_csv("../saved_models/Random_Search_Info.csv", index_col=0)
     best_params = random_search.best_params_
     fit_time = random_search.refit_time_ 
     best_score = random_search.best_score_
-    info.loc["Best %s " % (algorithm), "Best Params"] = str(best_params)
-    info.loc["Best %s " % (algorithm), "F1-Score"] = "%.4f" % best_score
-    info.loc["Best %s " % (algorithm), "Refit Time"] = "%.6f" % fit_time 
+    info.loc["Best %s %s %s" % (clusterJobs[jobNo][0],clusterJobs[jobNo][1],clusterJobs[jobNo][2]), "Best Params"] = str(best_params)
+    info.loc["Best %s %s %s" % (clusterJobs[jobNo][0],clusterJobs[jobNo][1],clusterJobs[jobNo][2]), "F1-Score"] = "%.4f" % best_score
+    info.loc["Best %s %s %s" % (clusterJobs[jobNo][0],clusterJobs[jobNo][1],clusterJobs[jobNo][2]), "Refit Time"] = "%.6f" % fit_time 
     print(info)
-    info.to_csv("../saved_models/Random_Search_Info_%s_%s.csv" % (prediction_set[ps_num],data_set[ds_num]))
+    info.to_csv("../saved_models/Random_Search_Info.csv")
 
 
 #stolen shamelessly off the internet
@@ -148,7 +161,7 @@ def report(results, n_top=3):
         for candidate in candidates:
             print("Model with rank: {0}".format(i))
 
-            #except this part, this is the RMSLE score
+            #except this part, this is the F1-Score score
             print("F1-Score: {0:.3f} (std: {1:.3f})"
                   .format(results['mean_test_score'][candidate],
                           results['std_test_score'][candidate]))
@@ -164,6 +177,9 @@ if __name__ == "__main__":
     #read data from one of 6 datasets
     X, y = read_npy()
 
+    if not os.path.isfile("../saved_models/Random_Search_Info.csv"):
+        createSkeletonCSV()
+
     '''
     algorithm : string
                 - kNN
@@ -172,7 +188,7 @@ if __name__ == "__main__":
                 - Random_Forest
                 - Naive-Bayes
     '''
-    algorithm = jobs[jobNo]   #"MLP"
+    algorithm = clusterJobs[jobNo][0]
     
     #this is where the params to test are stored
     param_dict = get_params(algorithm)
