@@ -68,7 +68,11 @@ def test_best_algs():
                 if alg_name == "SGD":
                     alg_name += "_Classifier"
                     data_set = fields[3]
-                    pred_set = fields[4][:-7]   
+                    pred_set = fields[4][:-7]
+                elif: alg_name == "Random":
+                    alg_name += "_Forest"
+                    data_set = fields[3]
+                    pred_set = fields[4][:-7]
                 else:
                     data_set = fields[2]
                     pred_set = fields[3][:-7]
