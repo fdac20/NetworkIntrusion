@@ -1,0 +1,21 @@
+,Best Params,F1-Score,Refit Time
+Best kNN ORIG bin,"{'p': 1, 'n_neighbors': 25}",0.9444,214.274112
+Best kNN PCA bin,"{'p': 1, 'n_neighbors': 11}",0.9387,0.730054
+Best kNN ORIG labels,"{'p': 1, 'n_neighbors': 11}",0.7786,228.948314
+Best kNN PCA labels,"{'p': 2, 'n_neighbors': 11}",0.7693,0.928569
+Best MLP ORIG bin,"{'learning_rate_init': 0.001, 'hidden_layer_sizes': (20,), 'batch_size': 30, 'alpha': 0.01, 'activation': 'tanh'}",0.9411,216.889899
+Best MLP PCA bin,"{'learning_rate_init': 0.01, 'hidden_layer_sizes': (10, 10, 20, 20, 20), 'batch_size': 200, 'alpha': 0.01, 'activation': 'tanh'}",0.9390,241.468957
+Best MLP ORIG labels,"{'learning_rate_init': 0.001, 'hidden_layer_sizes': (5, 10, 10, 10, 10), 'batch_size': 30, 'alpha': 0.01, 'activation': 'relu'}",0.7632,672.049016
+Best MLP PCA labels,"{'learning_rate_init': 0.01, 'hidden_layer_sizes': (5, 10, 20), 'batch_size': 200, 'alpha': 0.01, 'activation': 'tanh'}",0.752,386.390138
+Best SGD_Classifier ORIG bin,"{'max_iter': 100, 'alpha': 0.0001}",0.9303,1.463507
+Best SGD_Classifier PCA bin,"{'max_iter': 1000, 'alpha': 0.1}",0.9055,0.5856680000000001
+Best SGD_Classifier ORIG labels,"{'max_iter': 10000, 'alpha': 0.001}",0.7211,9.612746
+Best SGD_Classifier PCA labels,"{'max_iter': 100, 'alpha': 0.0001}",0.6438,9.358407000000001
+Best Random_Forest ORIG bin,"{'n_estimators': 200, 'min_samples_split': 6, 'min_samples_leaf': 1, 'max_features': 'sqrt', 'criterion': 'entropy'}",0.9615,158.276811
+Best Random_Forest PCA bin,"{'n_estimators': 200, 'min_samples_split': 2, 'min_samples_leaf': 2, 'max_features': 'auto', 'criterion': 'entropy'}",0.9478,390.956281
+Best Random_Forest ORIG labels,"{'n_estimators': 200, 'min_samples_split': 4, 'min_samples_leaf': 1, 'max_features': 'sqrt', 'criterion': 'gini'}",0.8198,138.243984
+Best Random_Forest PCA labels,"{'n_estimators': 200, 'min_samples_split': 6, 'min_samples_leaf': 1, 'max_features': 'log2', 'criterion': 'gini'}",0.782,288.82943
+Best Naive-Bayes ORIG bin,{},0.8661,0.383881
+Best Naive-Bayes PCA bin,{},0.8474,0.210313
+Best Naive-Bayes ORIG labels,{},0.5047,0.5716399999999999
+Best Naive-Bayes PCA labels,{},0.5647,0.49594799999999994
