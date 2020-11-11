@@ -91,9 +91,29 @@ def get_params(algorithm):
 #this is just to handle exceptions
 def custom_scorer(y_true, y_pred):
     score = np.nan
+
+    #keep this identical to original scoring method from sklearn
+    #The following if-else allows us to weight each label; since there are more normal than attack samples, we weight the normal samples less than the attacks
+    label_weights = []
+    normal_weight = 0.9
+    
+    if clusterJobs[jobNo][2] == "bin":
+        num_normal = (y_true == 0).sum() 
+        for elem in y_true:
+            if elem == 0:
+                label_weights.append(num_normal / (len(y_true) * (1 - normal_weight)))
+            else:
+                label_weights.append(1)
+    else:
+        num_normal = (y_true == "Normal").sum() 
+        for elem in y_true:
+            if elem == "Normal":
+                label_weights.append(num_normal / (len(y_true) * (1 - normal_weight)))
+            else:
+                label_weights.append(1) 
+    
     try:
-        #keep this identical to original scoring method from sklearn
-        score = f1_score(y_true, y_pred, average='weighted')
+        score = f1_score(y_true, y_pred, average='weighted',sample_weight=label_weights)
     except Exception:
         pass
     return score

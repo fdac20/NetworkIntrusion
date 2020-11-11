@@ -10,7 +10,7 @@ import re
 from sklearn.metrics import f1_score, classification_report
 import time
 
-labels = ["Reconnaissance","Backdoor","DoS","Exploits","Analysis","Fuzzers","Worms","Shellcode","Generic"]
+labels = ["Reconnaissance","Backdoor","DoS","Exploits","Analysis","Fuzzers","Worms","Shellcode","Generic","Normal"]
 
 def load_test_data(data_set,pred_set):
 
@@ -20,7 +20,26 @@ def load_test_data(data_set,pred_set):
     return X, y
 
 def eval(y_test, y_pred,pred_set):
-    overall_f1_score = f1_score(y_test, y_pred, average='weighted')
+    label_weights = []
+    normal_weight = 0.9
+    
+    if pred_set == "bin":
+        num_normal = (y_test == 0).sum() 
+        for elem in y_test:
+            if elem == 0:
+                label_weights.append(num_normal / (len(y_test) * (1 - normal_weight)))
+            else:
+                label_weights.append(1)
+    else:
+        num_normal = (y_test == "Normal").sum() 
+        for elem in y_test:
+            if elem == "Normal":
+                label_weights.append(num_normal / (len(y_test) * (1 - normal_weight)))
+            else:
+                label_weights.append(1) 
+
+
+    overall_f1_score = f1_score(y_test, y_pred, average='weighted',sample_weight=label_weights)
     if pred_set == "labels":
         report = classification_report(y_test,y_pred,labels=labels,output_dict=True) #labels = test_labels
     else:
@@ -69,7 +88,7 @@ def test_best_algs():
                     alg_name += "_Classifier"
                     data_set = fields[3]
                     pred_set = fields[4][:-7]
-                elif: alg_name == "Random":
+                elif alg_name == "Random":
                     alg_name += "_Forest"
                     data_set = fields[3]
                     pred_set = fields[4][:-7]
