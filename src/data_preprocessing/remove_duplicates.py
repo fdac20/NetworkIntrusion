@@ -13,7 +13,7 @@ def float_cast(item):
     except ValueError:
         return item
 
-def count_plot(labels):
+def count_plot(labels,ds):
     label_dict = {}
     for l in labels:
         # if l == 'normal' or l == 'neptune':
@@ -23,18 +23,18 @@ def count_plot(labels):
         else:
             label_dict[l] += 1
     label_dict = OrderedDict(sorted(label_dict.items(), key=itemgetter(1), reverse=True))
-    ''' 
+     
     fig = plt.figure(figsize=(100, 100))
     plt.bar(label_dict.keys(), label_dict.values())
-    plt.xticks(rotation=90, fontsize=100)
-    plt.yticks(fontsize=15)
+    plt.xticks(rotation=45, fontsize=125,ha="right")
+    plt.yticks(fontsize=125)
     # plt.title("Distribution of Attacks Without Neptune")
     # plt.savefig("../graphs/attacks_without_neptune.png")
     # plt.title("Distribution of Attacks Only")
     # plt.savefig("../graphs/attacks_only.png")
-    plt.title("Distribution of Samples", fontsize=15)
-    plt.savefig("../../graphs/label_distribution_train.png", bbox='tight_layout')
-    '''
+    plt.title("Distribution of Samples", fontsize=125)
+    plt.savefig("../../graphs/label_distribution_%s.png" % ds, bbox='tight_layout')
+    
 
 def main():
 
@@ -68,7 +68,10 @@ def main():
         list_data = pd.DataFrame(list_data)
         list_data = list_data.iloc[:,1:]
 
-        #count_plot(list_data.iloc[:,-2].values.tolist()) #MAKE LABELS BIGGER!! TODO
+        if "test" in i:
+            count_plot(list_data.iloc[:,-2].values.tolist(),"test") #MAKE LABELS BIGGER!! TODO
+        else:
+            count_plot(list_data.iloc[:,-2].values.tolist(),"train") 
 
         enc = OrdinalEncoder()
         list_data.iloc[:,1:4] = enc.fit_transform(list_data.iloc[:,1:4])
