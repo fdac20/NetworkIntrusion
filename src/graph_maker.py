@@ -24,10 +24,10 @@ from sklearn.preprocessing import StandardScaler
 def best_models():
     model_dict = {  
                     "Naive-Bayes" : GaussianNB(),
-                    "SGD_Classifier" : SGDClassifier(max_iter=100, alpha=0.001),
-                    "kNN" : KNeighborsClassifier(p=1, n_neighbors=11),
-                    "MLP" : MLPClassifier(learning_rate_init=0.01, hidden_layer_sizes=(10, 10, 10, 10, 10), batch_size=200, alpha=0.01, activation='tanh'),
-                    "Random_Forest" : RandomForestClassifier(n_estimators=50, min_samples_split=4, min_samples_leaf=1, max_features='sqrt', criterion='gini')
+                    "SGD_Classifier" : SGDClassifier(max_iter=1000, alpha=0.1),
+                    "kNN" : KNeighborsClassifier(p=3, n_neighbors=1),
+                    "MLP" : MLPClassifier(learning_rate_init=0.001, hidden_layer_sizes=(10, 10, 10), batch_size=30, alpha=0.01, activation='relu'),
+                    "Random_Forest" : RandomForestClassifier(n_estimators=10, min_samples_split=2, min_samples_leaf=1, max_features='sqrt', criterion='gini')
                   }
 
     return model_dict
@@ -35,10 +35,10 @@ def best_models():
 # the x_train and x_test here are the actual train and test sets
 # NOT the split train set
 def get_data():
-    X_train = np.load("../data/X_train_ORIG.npy")
-    y_train = np.load("../data/y_train_labels.npy")
-    X_test = np.load("../data/X_test_ORIG.npy")
-    y_test = np.load("../data/y_test_labels.npy")
+    X_train = np.load("../data/X_train_PCA.npy")
+    y_train = np.load("../data/y_train_bin.npy")
+    X_test = np.load("../data/X_test_PCA.npy")
+    y_test = np.load("../data/y_test_bin.npy")
     return (X_train, y_train, X_test, y_test)
 
 # test accuracy of model and plot ROC curve
@@ -72,6 +72,7 @@ def plot_ROC(data, model_dict):
 def confusion_matrix_(y_test, y_pred, k):
     labels = np.unique(y_test)
     strlabels=[]
+    attacklabels=["attack","normal"]
     '''
     for i in labels:
         if i == b'Reconnaissance':
@@ -107,8 +108,8 @@ def confusion_matrix_(y_test, y_pred, k):
     ax.set_xlabel('Predicted Labels', fontsize='large')
     ax.set_ylabel('True Labels', fontsize='large')
     ax.set_title("Confusion matrix for %s" % k, fontsize='large')
-    ax.xaxis.set_ticklabels(strlabels, rotation=45, fontsize='small')
-    ax.yaxis.set_ticklabels(strlabels, rotation='horizontal', fontsize='large')
+    ax.xaxis.set_ticklabels(attacklabels, rotation=45, fontsize='small')
+    ax.yaxis.set_ticklabels(attacklabels, rotation='horizontal', fontsize='large')
     plt.savefig("../graphs/%s_confusion_matrix.png" % k)
 
     
