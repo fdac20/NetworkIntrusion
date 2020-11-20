@@ -1,0 +1,64 @@
+Orig bin
+	Naive-Bayes
+		false positive 0.0
+		true positive 0.0005294273360981205
+	SGD_Classifier
+		false positive 0.4221891891891892
+		true positive 0.9988308479661167
+	kNN
+		false positive 0.27256756756756756
+		true positive 0.9473440395305744
+	MLP
+		false positive 0.3531081081081081
+		true positive 0.9871172681549457
+	Random_Forest
+		false positive 0.4189459459459459
+		true positive 0.9973087443748345
+PCA bin
+	Naive-Bayes
+		false positive 0.7288918918918919
+		true positive 0.9510941498279362
+	SGD_Classifier
+		false positive 0.5191351351351351
+		true positive 0.928439071737404
+	kNN
+		false positive 0.4887297297297297
+		true positive 0.9137695226330186
+	MLP
+		false positive 0.40416216216216216
+		true positive 0.9450939733521574
+	Random_Forest
+		false positive 0.4777567567567568
+		true positive 0.890982087708462
+PCA labels
+	Naive-Bayes
+		false positive 0.09291449748522015
+		true positive 0.35462162162162164
+	SGD_Classifier
+		false positive 0.48581575928703785
+		true positive 0.6163243243243244
+	kNN
+		false positive 0.10478249360275302
+		true positive 0.5241621621621622
+	MLP
+		false positive 0.0792376246360187
+		true positive 0.5187027027027027
+	Random_Forest
+		false positive 0.06922262419482926
+		true positive 0.5222972972972973
+ORIG labels
+	Naive-Bayes
+		false positive 0.9994705726639019
+		true positive 1.0
+	SGD_Classifier
+		false positive 0.13626136062825378
+		true positive 0.829027027027027
+	kNN
+		false positive 0.03147886702550075
+		true positive 0.6937567567567567
+	MLP
+		false positive 0.016125474278655256
+		true positive 0.6196756756756757
+	Random_Forest
+		false positive 0.014735727521397688
+		true positive 0.5906216216216216

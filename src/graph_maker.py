@@ -24,10 +24,10 @@ from sklearn.preprocessing import StandardScaler
 def best_models():
     model_dict = {  
                     "Naive-Bayes" : GaussianNB(),
-                    "SGD_Classifier" : SGDClassifier(max_iter=1000, alpha=0.1),
-                    "kNN" : KNeighborsClassifier(p=3, n_neighbors=1),
-                    "MLP" : MLPClassifier(learning_rate_init=0.001, hidden_layer_sizes=(10, 10, 10), batch_size=30, alpha=0.01, activation='relu'),
-                    "Random_Forest" : RandomForestClassifier(n_estimators=10, min_samples_split=2, min_samples_leaf=1, max_features='sqrt', criterion='gini')
+                    "SGD_Classifier" : SGDClassifier(max_iter=100, alpha=0.001),
+                    "kNN" : KNeighborsClassifier(p=1, n_neighbors=11),
+                    "MLP" : MLPClassifier(learning_rate_init=0.01, hidden_layer_sizes= (10, 10, 10, 10, 10), batch_size=200, alpha=0.01, activation='tanh'),
+                    "Random_Forest" : RandomForestClassifier(n_estimators=50, min_samples_split=4, min_samples_leaf=1, max_features='sqrt', criterion='gini')
                   }
 
     return model_dict
@@ -35,17 +35,20 @@ def best_models():
 # the x_train and x_test here are the actual train and test sets
 # NOT the split train set
 def get_data():
-    X_train = np.load("../data/X_train_PCA.npy")
-    y_train = np.load("../data/y_train_bin.npy")
-    X_test = np.load("../data/X_test_PCA.npy")
-    y_test = np.load("../data/y_test_bin.npy")
-    return (X_train, y_train, X_test, y_test)
+    X_train = np.load("../data/X_train_ORIG.npy")
+    y_train = np.load("../data/y_train_labels.npy")
+    X_test = np.load("../data/X_test_ORIG.npy")
+    y_test = np.load("../data/y_test_labels.npy")
+    y_test_roc = np.load("../data/y_test_bin.npy")
+    with open("tpfp.txt","a") as f:
+        f.writelines("ORIG labels\n")
+    return (X_train, y_train, X_test, y_test,y_test_roc)
 
 # test accuracy of model and plot ROC curve
 def plot_ROC(data, model_dict):
 
     labels = ["Recon","Backdoor","DoS","Exploits","Analysis","Fuzzers","Worms","Shellcode","Generic","Normal"]
-
+    
     # go through all models and plot ROC curves
     fpr_tpr_auc = []
     for k, v in model_dict.items():
@@ -53,8 +56,10 @@ def plot_ROC(data, model_dict):
         model = v.fit(data[0],data[1])
         print("Predicting %s" % k)
         y_pred = model.predict(data[2])
+        with open("tpfp.txt","a") as f:
+            f.writelines("\t"+str(k)+"\n")
         confusion_matrix_(data[3], y_pred, k)
-        '''
+        
         try:
             y_pred_proba = model.predict_proba(data[2])
             
@@ -64,22 +69,42 @@ def plot_ROC(data, model_dict):
         
         if len(y_pred_proba.shape) > 1:
             y_pred_proba = y_pred_proba[:, 1]
-        fpr, tpr, _ = roc_curve(labels, y_pred_proba)
-        roc_auc = roc_auc_score(labels, y_pred_proba)
+        #fpr, tpr, _ = roc_curve(labels, y_pred_proba)
+        #roc_auc = roc_auc_score(labels, y_pred_proba)
+        fpr, tpr, _ = roc_curve(data[4], y_pred_proba)
+        roc_auc = roc_auc_score(data[4], y_pred_proba)
         fpr_tpr_auc.append([k, fpr, tpr, roc_auc])
     ROC_curve(fpr_tpr_auc)
-    '''
+    
 def confusion_matrix_(y_test, y_pred, k):
     labels = np.unique(y_test)
     strlabels=[]
-    attacklabels=["attack","normal"]
-    '''
+    binlab=[]
+    bin_test=[]
+
+    for i in y_test:
+        if i==b'Normal':
+            bin_test.append(1.0)
+        else:
+            bin_test.append(0.0)
+    for i in y_pred:
+        if i==b'Normal':
+            binlab.append(1.0)
+        else:
+            binlab.append(0.0)
+    binlab=np.array(binlab)
+    bintest=np.array(bin_test)
+
     for i in labels:
         if i == b'Reconnaissance':
             strlabels.append("Recon")
+        elif i == 1.0:
+            strlabels.append("Attack")
+        elif i == 0.0:
+            strlabels.append("Normal")
         else:
             strlabels.append(i.decode("utf-8"))
-    '''
+    
     # get confusion matrix
     label_weights = []
     normal_weight = 0.9
@@ -100,18 +125,24 @@ def confusion_matrix_(y_test, y_pred, k):
         else:
             label_weights.append(1) 
     '''
-    cm = confusion_matrix(y_test, y_pred)
+    tn,fp,fn,tp= confusion_matrix(bin_test, binlab).ravel()
+    cm= confusion_matrix(y_test, y_pred)
+    print(tp,fp)
+    with open("tpfp.txt","a") as f:
+        f.writelines("\t\tfalse positive "+str((fp/(fp+tn)))+"\n")
+        f.writelines("\t\ttrue positive "+str((tp/(tp+fn)))+"\n")
+    
     cm = cm.astype('float')/cm.sum(axis=1)[:, np.newaxis]
-
+    
     fig, ax = plt.subplots(figsize=(9, 7))
     sn.heatmap(cm, annot=True, ax=ax, fmt='.2g', cmap='Blues', linewidths=0.25, linecolor='black')
     ax.set_xlabel('Predicted Labels', fontsize='large')
     ax.set_ylabel('True Labels', fontsize='large')
     ax.set_title("Confusion matrix for %s" % k, fontsize='large')
-    ax.xaxis.set_ticklabels(attacklabels, rotation=45, fontsize='small')
-    ax.yaxis.set_ticklabels(attacklabels, rotation='horizontal', fontsize='large')
+    ax.xaxis.set_ticklabels(strlabels, rotation=45, fontsize='small')
+    ax.yaxis.set_ticklabels(strlabels, rotation='horizontal', fontsize='large')
     plt.savefig("../graphs/%s_confusion_matrix.png" % k)
-
+    
     
 def ROC_curve(fpr_tpr_auc):
     # plot ROC curve
