@@ -24,10 +24,10 @@ from sklearn.preprocessing import StandardScaler
 def best_models():
     model_dict = {  
                     "Naive-Bayes" : GaussianNB(),
-                    "SGD_Classifier" : SGDClassifier(max_iter=100, alpha=0.001),
-                    "kNN" : KNeighborsClassifier(p=1, n_neighbors=11),
-                    "MLP" : MLPClassifier(learning_rate_init=0.01, hidden_layer_sizes= (10, 10, 10, 10, 10), batch_size=200, alpha=0.01, activation='tanh'),
-                    "Random_Forest" : RandomForestClassifier(n_estimators=50, min_samples_split=4, min_samples_leaf=1, max_features='sqrt', criterion='gini')
+                    "SGD_Classifier" : SGDClassifier(max_iter=1000, alpha=0.0001),
+                    "kNN" : KNeighborsClassifier(p=1, n_neighbors=1),
+                    "MLP" : MLPClassifier(learning_rate_init=0.001, hidden_layer_sizes= (5, 10, 10, 10, 10), batch_size=30, alpha=0.01, activation='tanh'),
+                    "Random_Forest" : RandomForestClassifier(n_estimators=50, min_samples_split=2, min_samples_leaf=1, max_features='sqrt', criterion='entropy')
                   }
 
     return model_dict
@@ -36,12 +36,12 @@ def best_models():
 # NOT the split train set
 def get_data():
     X_train = np.load("../data/X_train_ORIG.npy")
-    y_train = np.load("../data/y_train_labels.npy")
+    y_train = np.load("../data/y_train_bin.npy")
     X_test = np.load("../data/X_test_ORIG.npy")
-    y_test = np.load("../data/y_test_labels.npy")
+    y_test = np.load("../data/y_test_bin.npy")
     y_test_roc = np.load("../data/y_test_bin.npy")
     with open("tpfp.txt","a") as f:
-        f.writelines("ORIG labels\n")
+        f.writelines("orig bin\n")
     return (X_train, y_train, X_test, y_test,y_test_roc)
 
 # test accuracy of model and plot ROC curve
@@ -56,9 +56,9 @@ def plot_ROC(data, model_dict):
         model = v.fit(data[0],data[1])
         print("Predicting %s" % k)
         y_pred = model.predict(data[2])
-        with open("tpfp.txt","a") as f:
-            f.writelines("\t"+str(k)+"\n")
-        confusion_matrix_(data[3], y_pred, k)
+        #with open("tpfp.txt","a") as f:
+        #    f.writelines("\t"+str(k)+"\n")
+        #confusion_matrix_(data[3], y_pred, k)
         
         try:
             y_pred_proba = model.predict_proba(data[2])
