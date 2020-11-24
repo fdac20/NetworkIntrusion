@@ -2,6 +2,9 @@
 
 ## Authors: Charles Rizzo, Nick Skuda, Austin Saporito
 
+### Final Project Report
+
+The final project reports is entitled CS545_Final_Report.pdf and is in the top level of this repo.
 
 ### Workflow
 
